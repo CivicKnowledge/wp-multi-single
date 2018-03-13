@@ -1,0 +1,62 @@
+version: '3.3' 
+services:
+    wordpress1:
+        image: wordpress:careerpath
+        build: 
+            dockerfile: Dockerfile.wordpress
+            context: .
+        links:
+         - mariadb:mysql
+        environment:
+         - WORDPRESS_DB_NAME=wordpress1
+         - WORDPRESS_DB_PASSWORD=password
+         - VIRTUAL_HOST=demo1.careerpathfinder.cloud
+         - LETSENCRYPT_HOST=demo1.careerpathfinder.cloud
+         - LETSENCRYPT_EMAIL=eric@civicknowledge.com
+        ports:
+         - 8080:80
+        volumes:
+         - html1:/var/www/html
+    wordpress2:
+        image: wordpress
+        links:
+         - mariadb:mysql
+        environment:
+         - WORDPRESS_DB_NAME=wordpress2
+         - WORDPRESS_DB_PASSWORD=password
+         - VIRTUAL_HOST=demo2.careerpathfinder.cloud
+         - LETSENCRYPT_HOST=demo2.careerpathfinder.cloud
+         - LETSENCRYPT_EMAIL=eric@civicknowledge.com
+        ports:
+         - 8081:80
+        volumes:
+         - html2:/var/www/html
+    mariadb:
+        image: mariadb:careerpath
+        build: 
+            dockerfile: Dockerfile.mariadb
+            context: .
+        environment:
+         - MYSQL_ROOT_PASSWORD=password
+         # createdb.sql also creates wordpress2,3,4,5,6
+         - MYSQL_DATABASE=wordpress1
+        volumes:
+         - database:/var/lib/mysql
+    #phpmyadmin:
+    #  image: phpmyadmin/phpmyadmin
+    #  links:
+    #    - mariadb:db
+    #  ports:
+    #    - 8082:80
+    #  environment:
+    #    MYSQL_USERNAME: root
+    #    MYSQL_ROOT_PASSWORD: password
+     
+volumes:
+    database:
+    html1:
+    html2: 
+networks:
+  default:
+    external:
+      name: webproxy

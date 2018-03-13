@@ -1,0 +1,18 @@
+FROM wordpress:4.9-php7.2
+
+RUN apt-get update \
+    && apt-get install -y --force-yes --no-install-recommends less libxml2-dev \
+    && apt-get install -y zlib1g-dev zip \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install zip
+
+    #/usr/src/wordpress/wp-config-sample.php 
+
+ADD uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
+ADD updraftplus.zip /usr/src/wordpress/wp-content/plugins/
+
+RUN cd /usr/src/wordpress/wp-content/plugins/ && unzip updraftplus.zip 
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["apache2-foreground"]

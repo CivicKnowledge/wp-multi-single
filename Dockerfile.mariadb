@@ -1,0 +1,3 @@
+FROM mariadb
+
+ADD createdb.sql /docker-entrypoint-initdb.d/
